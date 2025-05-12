@@ -1,0 +1,31 @@
+Se puso en practica el algoritmo de K-Means para poder elaborar un modelo de aprendizaje no supervizado en el que las etiquetas o "y" del modelo no estan
+del todo definidas, de modo que el modelo tendra que definir patrones dentro del dataset para clasificar diferencias entre los datos y asignarles una
+etiqueta, para eso primero se utilizo un dataset sintetico con un total de 11 clusters o centroides con dispersiones variables, luego se entreno un modelo
+que defina esos 11 clusters con el algoritmo de K-Means, visualizandose entre dimensiones como resulto la clasificacion del modelo, posteriormente se hacen
+las pruebas de silueta que serviran para definir que tan bien clasificado esta el ajuste realizado para esa cantidad de centroides y se comparara con pruebas
+para otro numero de centroides, vemos que si bien el dataset fue creado usando 11 centroides, el mejor puntaje en la prueba fue para 10 centroides, ya que
+demuestra una distribucion mas uniforme para los grupos clasificados
+Para el aprendizaje semi-supervisado se utilizo un dataset de datos meterorologicos, datos como temperatura, humedad, velocidad del viento, etc registrados
+cada hora de cada dia por 10 años, conteniendo tambien algunas variables categoricas como un resumen del tiempo y la precipitacion que fueron preprocesados
+para que puedan funcionar dentro del dataset. Para la precipitacion se hizo un proceso de OneHot que creo 2 columnas booleanas para cada categoria si llovio
+o nevo, para el resumen se le otorgaron valores de peso a las palabras que se usaban para describir el tiempo, creandose 4 columnas que captaban lo que el
+resumen queria decir (nubosidad, viento, humedad y precipitacion). Para tratar de comprender el dataset y que patrones podria estar detectando el algoritmo
+se propuso usar distintas etiquetas a modo de prueba tratando de encontrar cual es el ajuste al que esta llegando el modelo, pues no se tiene conocimiento 
+pleno sobre meteorologia, luego de definir las etiquetas se asigno un numero arbitrario de 80 clusters al modelo y se etiqueto aquellos datos mas cercanos 
+a cada cluster, para posteriormente entrenar un modelo de regresion logistica multiple con dichos datos y poder tener un clasificador que pueda etiquetar 
+el resto de datos. Para el aprendizaje activo, se seleccionan aquellas muestras con menos confianza, y se les asigna las etiquetas verdaderas, ya que
+estas son las que pueden aportar mayor informacion, posteriormente se usan para volver a entrenar el modelo de manera que se consideren esas etiquetas poco
+confiables.
+- El primer modelo se realizo pensando en predecir la hora del dia en base al resto de datos, para lo cual se tomo el dato de la fecha y hora del registro
+como la etiqueta, se tomo en cuenta solo la hora y se entreno el modelo con 24 etiquetas por cada hora, que llego a un puntaje inicial de apenas 6.21%,
+lo siguiente que se hizo fue establecer horarios, de este modo se supone que el modelo puede estar prediciendo horarios del dia, asi que se etiqueto las 
+horas segun un horario de 4 jornadas (madrugada, mañana, tarde y noche), y 3 jornadas (mañana, tarde y noche), consiguiendose puntajes de 30.06% y 38.36%
+respectivamente y solo se tomo en cuenta el ultimo modelo para la parte del aprendizaje activo
+- El segundo modelo busca predecir las fechas en las que se hicieron los registros, principalmente los meses para ver si hay patrones de comportamiento por
+mes, entonces se etiquetaron los datos segun el mes en el que se hizo el registro, teniendo 12 etiquetas de cada mes, el modelo obtuvo un puntaje del 15%
+lo que indica que no hay una relacion muy grande para esas etiquetas, asi que se decidio cambiar el sentido de las etiquetas para que solo tomara en cuenta
+las estaciones del año segun el mes, de este modo habian 4 etiquetas (verano, primavera, otoño e invierno) con las que se logro un puntaje de 43.20% 
+con lo que se procedio al aprendizaje activo
+- El tercer modelo, tomo en cuenta el dato de precipitacion como etiqueta, que contenia las categorias de lluvia, nieve, y despejado. Se convirtio la fecha 
+en una variable ciclica tomando en cuenta las horas y la estacion del mes, con este modelo se consiguio un puntaje de 93.66% lo que sugiere que el modelo 
+esta clasificando los datos segun la precipitacion pues es a lo que aluden la mayoria de caracteristicas
